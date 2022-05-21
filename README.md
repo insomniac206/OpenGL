@@ -14,5 +14,5 @@ Cmake support hasn't been added yet.
 
 # Dependencies
 
- - [Glfw]('https://github.com/glfw/glfw')
- - [Glew]('https://github.com/glfw/glfw')
+ - [Glfw](https://github.com/glfw/glfw 'https://github.com/glfw/glfw')
+ - [Glew](https://github.com/nigels-com/glew 'https://github.com/nigels-com/glew')
