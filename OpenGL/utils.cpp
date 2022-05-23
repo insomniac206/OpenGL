@@ -1,25 +1,6 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-
-void CheckShaderErrors(unsigned int shader)
-{
-	int success;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-	{
-		int length;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-		char* infoLog = (char*)alloca(length * sizeof(char));
-		glGetShaderInfoLog(shader, length, &length, infoLog);
-		std::cout << "Shader Compilation Failed: " << infoLog << std::endl;
-		glDeleteShader(shader);
-	}
-}
 
 void APIENTRY glDebugOutput(GLenum source,
 	GLenum type,
@@ -66,33 +47,4 @@ void APIENTRY glDebugOutput(GLenum source,
 	case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
 	} std::cout << std::endl;
 	std::cout << std::endl;
-}
-
-
-std::string LoadShader(std::string filename)
-{
-	std::ifstream sSourceStream;
-
-	sSourceStream.open(filename);
-
-	std::string line;
-	std::stringstream ShaderSource;
-	while (std::getline(sSourceStream, line))
-	{
-		ShaderSource << line << "\n";
-	}
-	sSourceStream.close();
-
-	return ShaderSource.str();
-}
-
-unsigned int CompileShader(unsigned int type, std::string& source)
-{
-	unsigned int shader = glCreateShader(type);
-	const char* ShaderSource = source.c_str();
-
-	glShaderSource(shader, 1, &ShaderSource, nullptr);
-	glCompileShader(shader);
-
-	return shader;
 }

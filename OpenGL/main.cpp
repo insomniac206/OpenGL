@@ -1,11 +1,9 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include "Shader.hpp"
 #include <iostream>
 
-void CheckShaderErrors(unsigned int shader);
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);
-std::string LoadShader(std::string filename);
-unsigned int CompileShader(unsigned int type, std::string& source);
 
 void glfwErrorCallback(int error, const char* description)
 {
@@ -27,9 +25,6 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 
 int main()
 {
-	std::string vertexShaderSource = LoadShader("VertexShader.glsl");
-	std::string fragmentShaderSource = LoadShader("FragmentShader.glsl");
-
 	if (!glfwInit())
 		std::cout << "Could not Initialize GLFW!\n";
 
@@ -71,37 +66,26 @@ int main()
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 
-	unsigned int vertexShader = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
-	CheckShaderErrors(vertexShader);
+	Shader vertexShader = Shader("VertexShader.glsl", GL_VERTEX_SHADER);
+	addShader(vertexShader.ID);
 
-	unsigned int fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-	CheckShaderErrors(fragmentShader);
+	Shader fragmentShader = Shader("FragmentShader.glsl", GL_FRAGMENT_SHADER);
+	addShader(fragmentShader.ID);
 
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	int success;
-	char infoLog[512] ;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-	if (!success)
+	for (auto i : ShaderList)
 	{
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << "\n";
+		std::cout << i << "\n";
 	}
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	unsigned int shaderProgram = CreateShaderProgram();
+
+	cleanupShaders();
 
 	float vertexPositions[12] = {
 	   0.5f, 0.5f, 0.0f,
 	   0.5f, -0.5f, 0.0f,
 	  -0.5f, -0.5f, 0.0f,
-	  -0.5f, 0.5f, 0.0f
+	  -0.5f, 0.5f, 0.0f,
 	};
 
 	unsigned int indeces[6] = {
@@ -144,7 +128,6 @@ int main()
 
 		glfwPollEvents();
 
-
 		if ((now - lastFrameTime) >= fpsLimit)
 		{
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -162,6 +145,9 @@ int main()
 
 		lastUpdateTime = now;
 	}
+
+	glDeleteProgram(shaderProgram);
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
