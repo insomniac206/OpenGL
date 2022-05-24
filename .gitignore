@@ -1,4 +1,2 @@
 **/Debug
 .vs/
-OpenGL.*
-!OpenGL.sln
