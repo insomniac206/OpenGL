@@ -67,19 +67,31 @@ int main()
 	}
 
 	Shader vertexShader = Shader("VertexShader.glsl", GL_VERTEX_SHADER);
-	addShader(vertexShader.ID);
 
 	Shader fragmentShader = Shader("FragmentShader.glsl", GL_FRAGMENT_SHADER);
-	addShader(fragmentShader.ID);
 
-	for (auto i : ShaderList)
+	unsigned int shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader.ID);
+	glAttachShader(shaderProgram, fragmentShader.ID);
+
+	glLinkProgram(shaderProgram);
+
+	int success;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+
+	if (!success)
 	{
-		std::cout << i << "\n";
+		int length;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
+		char* infoLog = (char*)alloca(length * sizeof(char));
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "Shader Program linking failed: " << infoLog << '\n';
+		glDeleteProgram(shaderProgram);
 	}
 
-	unsigned int shaderProgram = CreateShaderProgram();
-
-	cleanupShaders();
+	glDeleteShader(vertexShader.ID);
+	glDeleteShader(fragmentShader.ID);
 
 	float vertexPositions[12] = {
 	   0.5f, 0.5f, 0.0f,
