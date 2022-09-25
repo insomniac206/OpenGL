@@ -90,6 +90,10 @@ int main()
 		glDeleteProgram(shaderProgram);
 	}
 
+	float colors[] = { 0.9f, 0.3f, 0.4f, 1.0f };
+	glUseProgram(shaderProgram);
+	fragmentShader.SetUniformValue("ourColor", shaderProgram, colors);
+
 	glDeleteShader(vertexShader.ID);
 	glDeleteShader(fragmentShader.ID);
 
@@ -142,7 +146,7 @@ int main()
 
 		if ((now - lastFrameTime) >= fpsLimit)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glBindVertexArray(vertexArrayObject);
@@ -158,7 +162,7 @@ int main()
 		lastUpdateTime = now;
 	}
 
-	glDeleteProgram(shaderProgram);
+	glDeleteProgram(shaderProgram);	
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
