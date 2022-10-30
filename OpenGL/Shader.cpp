@@ -1,10 +1,9 @@
 #include "Shader.hpp"
 
+static std::vector<unsigned int> shaderList;
+
 Shader::Shader(std::string shaderPath, unsigned int shaderType)
 {
-
-	if (shaderPath == "" && shaderType == 0)
-		return;
 
 	std::ifstream sSourceStream;
 
@@ -18,16 +17,11 @@ Shader::Shader(std::string shaderPath, unsigned int shaderType)
 	}
 	sSourceStream.close();
 
-	Shader::ID = compileShader(ShaderSource.str(), shaderType);
-}
-
-
-unsigned int Shader::compileShader(std::string shaderSource, unsigned int shaderType)
-{
 	unsigned int shader = glCreateShader(shaderType);
-	const char* ShaderSource = shaderSource.c_str();
+	std::string sSourceString = ShaderSource.str();
+	const char* shaderSource = sSourceString.c_str();
 
-	glShaderSource(shader, 1, &ShaderSource, nullptr);
+	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);
 
 	int success;
@@ -42,6 +36,37 @@ unsigned int Shader::compileShader(std::string shaderSource, unsigned int shader
 		std::cout << "Shader Compilation Failed: " << infoLog << std::endl;
 		glDeleteShader(shader);
 	}
+	Shader::ID = shader;
+	shaderList.push_back(Shader::ID);
+}
 
-	return shader;
+
+
+
+unsigned int createShaderProgram()
+{
+	unsigned int shaderProgram = glCreateProgram();
+	
+	for (auto i : shaderList)
+	{
+		glAttachShader(shaderProgram, i);
+	}
+
+	glLinkProgram(shaderProgram);
+
+	int success;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+
+	if (!success)
+	{
+		int length;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
+		char* infoLog = (char*)alloca(length * sizeof(char));
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "Shader Program linking failed: " << infoLog << '\n';
+		glDeleteProgram(shaderProgram);
+		return 0;
+	}
+
+	return shaderProgram;
 }

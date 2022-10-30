@@ -14,8 +14,6 @@ public:
 
 	Shader(std::string shaderPath, unsigned int shaderType);
 
-	unsigned int compileShader(std::string shaderSource, unsigned int shaderType);
-
 	template<typename valueType>
 	void SetUniformValue(std::string uniformName, unsigned int shaderProgram, valueType values[])
 	{
@@ -31,3 +29,5 @@ public:
 		}
 	}
 };
+
+unsigned int createShaderProgram();

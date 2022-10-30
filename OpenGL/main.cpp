@@ -70,25 +70,7 @@ int main()
 
 	Shader fragmentShader = Shader("FragmentShader.glsl", GL_FRAGMENT_SHADER);
 
-	unsigned int shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader.ID);
-	glAttachShader(shaderProgram, fragmentShader.ID);
-
-	glLinkProgram(shaderProgram);
-
-	int success;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		int length;
-		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
-		char* infoLog = (char*)alloca(length * sizeof(char));
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "Shader Program linking failed: " << infoLog << '\n';
-		glDeleteProgram(shaderProgram);
-	}
+	unsigned int shaderProgram = createShaderProgram();
 
 	float colors[] = { 0.9f, 0.3f, 0.4f, 1.0f };
 	glUseProgram(shaderProgram);
